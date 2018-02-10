@@ -1,4 +1,4 @@
-package holz.htl_klu.at.schubauto_controller;
+package htlklu.at.we_car;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         m_Client = new UDPClient("10.68.1.52", 4242);
-        System.out.println("gas gas gas");
+
         m_Timer = new Timer();
 
         m_Seek_Schub = (SeekBar) findViewById(R.id.ss_schub);
@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
 
                 //doesn't work because the timer runs a new thread and it is not allowed to change the text from a different thread. isdn.
+                m_DebugText.setText("");
 
                 float t_Steer;
                 if(m_Steering == 0)
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     t_Steer = m_Steering / 255.0f;
                 }
 
+                m_DebugText.setText(String.format("Steering Value: %.3f", t_Steer));
 
                 float t_Left = (float) (m_Torque * t_Steer);
                 float t_Right = (float) (m_Torque * (1 - t_Steer));
@@ -67,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
                 byte[] data = { (byte) (n_Right * m_Torque), (byte) (n_Left * m_Torque)};
                 m_Client.send(data);
-                System.out.println("Gas: " + Arrays.toString(data));
 
+                m_DebugText.setText(m_DebugText.getText() + "\nSent Network Data: \n" + Arrays.toString(data));
                 //log data to activity
             }
         }, 100, 100);

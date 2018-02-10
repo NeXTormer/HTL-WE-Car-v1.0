@@ -113,24 +113,10 @@ void setup ( void ) {
 	WiFi.begin ( ssid, password );
 	Serial.println ( "" );
 
-    pinMode(5, OUTPUT);
-  pinMode(12, OUTPUT);
-
-  pinMode(4, OUTPUT);
-  pinMode(13, OUTPUT);
-
-
-  digitalWrite(5, LOW);
-  digitalWrite(12, LOW);
-
-  digitalWrite(4, HIGH);
-  digitalWrite(13, HIGH);
   
   
   Serial.println("Connecting to WIFI");  
-
-
-  analogWriteRange(256);
+  
   
 
 	// Wait for connection
@@ -196,8 +182,6 @@ void handleUDPServer() {
     analogWrite(16, data[0]);
     analogWrite(14, data[1]);
 
-    
-    
   }
 
 }
