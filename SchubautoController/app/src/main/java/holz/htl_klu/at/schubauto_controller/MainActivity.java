@@ -8,22 +8,18 @@ import android.widget.TextView;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.prefs.Preferences;
-import java.util.prefs.PreferencesFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private UDPClient m_Client;
 
-    private SeekBar m_Seek_Schub;
-    private SeekBar m_Seek_Steer;
-
-    private TextView m_DebugText;
-
-    private float m_Torque = 1;
-    private float m_Steering = 1;
+    private SeekBar ss_Left;
+    private SeekBar ss_Right;
 
     private Timer m_Timer;
+
+    private int schubleft;
+    private int schubright;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +30,10 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("gas gas gas");
         m_Timer = new Timer();
 
-        m_Seek_Schub = (SeekBar) findViewById(R.id.ss_schub);
-        m_Seek_Steer = (SeekBar) findViewById(R.id.ss_lenkung);
-        m_DebugText = (TextView) findViewById(R.id.text_debug);
+        ss_Left = (SeekBar) findViewById(R.id.ss_left);
+        ss_Right = (SeekBar) findViewById(R.id.ss_right);
+
+
 
         m_Timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -44,28 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //doesn't work because the timer runs a new thread and it is not allowed to change the text from a different thread. isdn.
 
-                float t_Steer;
-                if(m_Steering == 0)
-                {
-                    t_Steer = 0;
-                }
-                else
-                {
-                    t_Steer = m_Steering / 255.0f;
-                }
-
-
-                float t_Left = (float) (m_Torque * t_Steer);
-                float t_Right = (float) (m_Torque * (1 - t_Steer));
-
-                float normref = t_Left < t_Right ? t_Right : t_Left;
-
-                float n_Left = t_Left / normref;
-                float n_Right = t_Right / normref;
-
-
-
-                byte[] data = { (byte) (n_Right * m_Torque), (byte) (n_Left * m_Torque)};
+                byte[] data = { (byte) schubleft, (byte) (schubright)};
                 m_Client.send(data);
                 System.out.println("Gas: " + Arrays.toString(data));
 
@@ -73,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 100, 100);
 
-        m_Seek_Schub.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        ss_Left.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) { }
@@ -84,12 +60,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
-                m_Torque = progress;
+                schubleft = progress;
             }
 
         });
 
-        m_Seek_Steer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        ss_Right.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) { }
@@ -100,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
-                m_Steering = progress;
+                schubright = progress;
             }
         });
 
